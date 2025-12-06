@@ -24,23 +24,32 @@ export default function ItemDetailPage() {
     const foundItem = items.find((i) => i.id === id)
     if (foundItem) {
       setItem(foundItem)
-    } else {
-      router.push('/history')
-    }
+      setSoldDate(
+        foundItem.soldDate
+          ? new Date(foundItem.soldDate).toISOString().split('T')[0]
+          : new Date().toISOString().split('T')[0]
+      )
+} else {
+  router.push('/history')
+}
+
   }, [id, items, router])
 
   const handleMarkAsSold = () => {
     if (!item || !soldPrice) return
-    
+  
+    const price = parseFloat(soldPrice)
+    if (Number.isNaN(price)) return
+  
     updateItem(item.id, {
       status: 'Sold',
-      soldPrice: parseFloat(soldPrice),
-      soldDate: new Date(soldDate),
+      soldPrice: price,
+      soldDate,
     })
-    
+  
     setShowSoldModal(false)
-    setItem({ ...item, status: 'Sold', soldPrice: parseFloat(soldPrice), soldDate: new Date(soldDate) })
-  }
+    setItem({ ...item, status: 'Sold', soldPrice: price, soldDate })
+  }  
 
   const handleEditDetails = () => {
     if (!item) return
@@ -202,8 +211,8 @@ export default function ItemDetailPage() {
 
       {/* Mark as Sold modal */}
       {showSoldModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-end z-50">
-          <div className="bg-white rounded-t-3xl w-full p-6 space-y-4">
+        <div className="fixed inset-0 bg-black/50 flex items-end z-[60]">
+          <div className="bg-white rounded-t-3xl w-full p-6 pb-10 space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Mark as Sold</h3>
             <NumberField
               label="Sold Price ($)"
@@ -220,17 +229,13 @@ export default function ItemDetailPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
-            <div className="flex gap-3">
-              <Button
-                fullWidth
-                onClick={handleMarkAsSold}
-                disabled={!soldPrice}
-              >
-                Save
+            <div className="space-y-3 pt-2">
+              <Button fullWidth onClick={handleMarkAsSold}>
+                Save as sold
               </Button>
               <Button
-                fullWidth
                 variant="ghost"
+                fullWidth
                 onClick={() => setShowSoldModal(false)}
               >
                 Cancel
