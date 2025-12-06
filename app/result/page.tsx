@@ -3,35 +3,42 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAppStore, ScannedItem, ItemStatus } from '@/store/appStore'
-import { calculateMockResult } from '@/lib/mockData'
+import { calculateMockResult, ResultData } from '@/lib/mockData'
 import Button from '@/components/ui/Button'
 import StatCard from '@/components/ui/StatCard'
+
+// Shape of what Confirm page stores in sessionStorage as "pendingItem"
+type PendingItem = {
+  imageUrl: string
+  detectedDetails: ScannedItem['detectedDetails']
+  purchasePrice: number
+  note?: string
+  editingItemId?: string
+}
 
 export default function ResultPage() {
   const router = useRouter()
   const [showSaveModal, setShowSaveModal] = useState(false)
-  const [pendingItem, setPendingItem] = useState<any>(null)
-  const [result, setResult] = useState<any>(null)
-  
+  const [pendingItem, setPendingItem] = useState<PendingItem | null>(null)
+  const [result, setResult] = useState<ResultData | null>(null)
+
   const {
     feePercent,
     avgShippingCost,
     targetRoi,
     minimumProfit,
-    primaryMarketplace,
+    primaryMarketplace, // reserved for future use (e.g. per-marketplace fee logic)
     addItem,
     updateItem,
     items,
   } = useAppStore()
 
   useEffect(() => {
-    // Get pending item from sessionStorage
     const stored = sessionStorage.getItem('pendingItem')
     if (stored) {
-      const item = JSON.parse(stored)
+      const item: PendingItem = JSON.parse(stored)
       setPendingItem(item)
-      
-      // Calculate result
+
       const calculatedResult = calculateMockResult(
         item.purchasePrice,
         feePercent,
@@ -73,7 +80,6 @@ export default function ResultPage() {
       // Create new item
       const newItem: ScannedItem = {
         id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
         imageUrl: pendingItem.imageUrl,
         detectedDetails: pendingItem.detectedDetails,
         purchasePrice: pendingItem.purchasePrice,
@@ -89,7 +95,7 @@ export default function ResultPage() {
           comps: result.comps,
         },
         status,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       }
       addItem(newItem)
     }
@@ -104,7 +110,11 @@ export default function ResultPage() {
   }
 
   if (!result || !pendingItem) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    )
   }
 
   const verdictColors = {
@@ -129,7 +139,9 @@ export default function ResultPage() {
     <div className="min-h-screen bg-white pb-32">
       <div className="px-6 py-8 space-y-6">
         {/* Verdict card */}
-        <div className={`${verdictColors[result.verdict]} rounded-2xl p-8 text-center text-white`}>
+        <div
+          className={`${verdictColors[result.verdict]} rounded-2xl p-8 text-center text-white`}
+        >
           <h1 className="text-4xl font-bold mb-2">{result.verdict}</h1>
           <p className="text-white/90">{verdictTexts[result.verdict]}</p>
         </div>
@@ -174,23 +186,33 @@ export default function ResultPage() {
         {/* Confidence */}
         <div className="bg-gray-50 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
-            <span className={`px-2 py-1 rounded text-xs font-medium ${confidenceColors[result.confidence]}`}>
+            <span
+              className={`px-2 py-1 rounded text-xs font-medium ${confidenceColors[result.confidence]}`}
+            >
               {result.confidence} confidence
             </span>
           </div>
           <p className="text-sm text-gray-600">
-            {result.confidence === 'High' && 'Strong comp data supports this recommendation.'}
-            {result.confidence === 'Medium' && 'Moderate comp data available.'}
-            {result.confidence === 'Low' && 'Limited comp data — use caution.'}
+            {result.confidence === 'High' &&
+              'Strong comp data supports this recommendation.'}
+            {result.confidence === 'Medium' &&
+              'Moderate comp data available.'}
+            {result.confidence === 'Low' &&
+              'Limited comp data — use caution.'}
           </p>
         </div>
 
         {/* Comps list */}
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Similar Sold Items</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Similar Sold Items
+          </h2>
           <div className="space-y-3">
-            {result.comps.map((comp: any) => (
-              <div key={comp.id} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
+            {result.comps.map((comp) => (
+              <div
+                key={comp.id}
+                className="flex gap-3 p-3 bg-gray-50 rounded-lg"
+              >
                 <img
                   src={comp.thumbnail}
                   alt={comp.title}
@@ -235,11 +257,10 @@ export default function ResultPage() {
       {showSaveModal && (
         <div className="fixed inset-0 bg-black/50 flex items-end z-50">
           <div className="bg-white rounded-t-3xl w-full p-6 space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Save item as:</h3>
-            <Button
-              fullWidth
-              onClick={() => handleSave('Purchased')}
-            >
+            <h3 className="text-lg font-semibold text-gray-900">
+              Save item as:
+            </h3>
+            <Button fullWidth onClick={() => handleSave('Purchased')}>
               Purchased
             </Button>
             <Button
@@ -262,4 +283,3 @@ export default function ResultPage() {
     </div>
   )
 }
-
