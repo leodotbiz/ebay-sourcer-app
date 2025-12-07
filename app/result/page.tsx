@@ -244,7 +244,7 @@ export default function ResultPage() {
       </div>
 
       {/* Sticky footer actions */}
-      <div className="fixed bottom-20 left-0 right-0 px-6 pb-4 bg-white border-t border-gray-200 z-30 space-y-2">
+      <div className="absolute bottom-20 left-0 right-0 px-6 pb-4 bg-white border-t border-gray-200 z-30 space-y-2">
         <Button fullWidth onClick={() => setShowSaveModal(true)}>
           Save item
         </Button>
@@ -255,7 +255,7 @@ export default function ResultPage() {
 
       {/* Save modal */}
       {showSaveModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-end z-50">
+        <div className="absolute inset-0 bg-black/50 flex items-end z-50">
           <div className="bg-white rounded-t-3xl w-full p-6 space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">
               Save item as:

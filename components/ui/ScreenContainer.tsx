@@ -5,11 +5,17 @@ interface ScreenContainerProps {
   className?: string
 }
 
-export default function ScreenContainer({ children, className = '' }: ScreenContainerProps) {
+export default function ScreenContainer({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <div className={`max-w-md mx-auto w-full ${className}`}>
-      {children}
+    <div className="min-h-screen bg-slate-100 flex justify-center">
+      {/* Phone frame */}
+      <div className="w-full max-w-sm bg-white shadow-lg relative">
+        {children}
+      </div>
     </div>
   )
 }
-

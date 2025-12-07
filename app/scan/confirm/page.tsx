@@ -30,14 +30,22 @@ export default function ConfirmDetailsPage() {
   }, [])
 
   const handleGetBuyPass = () => {
-    // Store form data in sessionStorage to pass to result page
-    sessionStorage.setItem('pendingItem', JSON.stringify({
-      detectedDetails,
-      purchasePrice: parseFloat(purchasePrice) || 0,
-      note: note || undefined,
-      imageUrl: 'https://via.placeholder.com/400x500?text=Item+Photo',
-      editingItemId,
-    }))
+    const price = parseFloat(purchasePrice)
+  
+    // Extra safety: don’t proceed if price is invalid
+    if (!price || Number.isNaN(price) || price <= 0) return
+  
+    sessionStorage.setItem(
+      'pendingItem',
+      JSON.stringify({
+        detectedDetails,
+        purchasePrice: price,
+        note: note.trim() || undefined,
+        imageUrl: 'https://via.placeholder.com/400x500?text=Item+Photo',
+        editingItemId,
+      })
+    )
+  
     router.push('/result')
   }
 
@@ -130,8 +138,8 @@ export default function ConfirmDetailsPage() {
         </div>
       </div>
 
-      {/* Sticky button */}
-      <div className="fixed bottom-20 left-0 right-0 px-6 pb-4 bg-white border-t border-gray-200 z-30">
+      {/* Get Buy/Pass button */}
+      <div className="absolute bottom-20 left-0 right-0 px-6 pb-4 bg-white border-t border-gray-200 z-30">
         <Button
           fullWidth
           onClick={handleGetBuyPass}
