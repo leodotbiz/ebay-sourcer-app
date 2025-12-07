@@ -6,27 +6,34 @@ import { useAppStore, ItemStatus } from '@/store/appStore'
 import Pill from '@/components/ui/Pill'
 import Button from '@/components/ui/Button'
 
+const verdictBg: Record<'BUY' | 'MAYBE' | 'PASS', string> = {
+  BUY: 'bg-emerald-100 text-emerald-800',
+  MAYBE: 'bg-amber-100 text-amber-800',
+  PASS: 'bg-rose-100 text-rose-800',
+}
+
+const statusLabel: Record<'Purchased' | 'Considering' | 'Sold', string> = {
+  Purchased: 'Purchased',
+  Considering: 'Saved / considering',
+  Sold: 'Sold',
+}
+
 export default function HistoryPage() {
   const router = useRouter()
   const [filter, setFilter] = useState<ItemStatus | 'All'>('All')
   const items = useAppStore((state) => state.items)
   const sortedItems = useMemo(() => {
-  const sorted = [...items].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  )
-  if (filter === 'All') {
-    return sorted
-  }
+    const sorted = [...items].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() -
+        new Date(a.createdAt).getTime()
+    )
   
-  const filtered = items.filter((item) => item.status === filter)
-  const sortedFiltered = [...filtered].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  )
-  
-  return sortedFiltered
+    return filter === 'All'
+      ? sorted
+      : sorted.filter((item) => item.status === filter)
   }, [items, filter])
   
-
   const verdictColors = {
     BUY: 'bg-accent-green text-white',
     MAYBE: 'bg-accent-amber text-white',
