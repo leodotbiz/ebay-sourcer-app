@@ -31,13 +31,13 @@ export default function OnboardingPage() {
       setStep(step + 1)
     } else {
       setOnboardingCompleted(true)
-      router.push('/scan')
+      router.replace('/scan')
     }
   }
 
   const handleSkip = () => {
     setOnboardingCompleted(true)
-    router.push('/scan')
+    router.replace('/scan')
   }
 
   const handleMarketplaceSelect = (marketplace: Marketplace) => {

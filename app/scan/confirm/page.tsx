@@ -139,7 +139,7 @@ export default function ConfirmDetailsPage() {
       </div>
 
       {/* Get Buy/Pass button */}
-      <div className="absolute bottom-20 left-0 right-0 px-6 pb-4 bg-white border-t border-gray-200 z-30">
+      <div className="absolute bottom-20 left-0 right-0 max-w-[420px] mx-auto w-full px-6 pb-4 bg-white shadow-[0_-2px_6px_rgba(15,23,42,0.08)] z-30">
         <Button
           fullWidth
           onClick={handleGetBuyPass}
