@@ -12,10 +12,16 @@ export default function Pill({ label, active = false, onClick, className = '' }:
     <button
       onClick={onClick}
       className={`
-        px-4 py-2 rounded-full text-sm font-medium transition-colors
-        ${active 
-          ? 'bg-primary text-white' 
-          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+        inline-flex items-center justify-center
+        px-3 sm:px-4 py-1.5 sm:py-2
+        rounded-full
+        text-xs sm:text-sm font-medium
+        whitespace-nowrap
+        transition-colors
+        ${
+          active
+            ? 'bg-primary text-white'
+            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
         }
         ${className}
       `}

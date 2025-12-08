@@ -137,7 +137,7 @@ export default function ResultPage() {
 
   return (
     <div className="min-h-screen bg-white pb-32">
-      <div className="px-6 py-8 space-y-6">
+      <div className="px-6 py-8 pb-40 space-y-6">
         {/* Verdict card */}
         <div
           className={`${verdictColors[result.verdict]} rounded-2xl p-8 text-center text-white`}
@@ -244,13 +244,18 @@ export default function ResultPage() {
       </div>
 
       {/* Sticky footer actions */}
-      <div className="absolute bottom-20 left-0 right-0 px-6 pb-4 bg-white border-t border-gray-200 z-30 space-y-2">
+      <div className="absolute bottom-20 left-0 right-0 px-6 pt-4 pb-4 bg-white shadow-[0_-2px_6px_rgba(15,23,42,0.08)] z-30 space-y-2">
         <Button fullWidth onClick={() => setShowSaveModal(true)}>
           Save item
         </Button>
-        <Button variant="ghost" fullWidth onClick={handleRescan}>
+        <Button
+          fullWidth
+          className="bg-gray-100 hover:bg-gray-200 text-gray-700"
+          onClick={handleRescan}
+        >
           Rescan / adjust details
         </Button>
+
       </div>
 
       {/* Save modal */}

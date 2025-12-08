@@ -50,7 +50,7 @@ export default function ConfirmDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-primary pb-20">
+    <div className="min-h-screen bg-slate-50 pb-20">
       <TopBar title="Confirm Details" backHref="/scan" />
       
       {/* Image preview */}
@@ -71,7 +71,7 @@ export default function ConfirmDetailsPage() {
       </div>
 
       {/* Form panel */}
-      <div className="bg-white rounded-t-3xl -mt-6 pt-6 px-6 pb-32 min-h-[calc(100vh-16rem)]">
+      <div className="bg-white rounded-t-3xl -mt-6 pt-6 px-6 pb-8 min-h-[calc(100vh-16rem)]">
         <p className="text-xs text-gray-500 mb-4">
           Edit anything that looks off before we search comps.
         </p>
@@ -136,17 +136,17 @@ export default function ConfirmDetailsPage() {
             />
           </div>
         </div>
-      </div>
 
-      {/* Get Buy/Pass button */}
-      <div className="absolute bottom-20 left-0 right-0 max-w-[420px] mx-auto w-full px-6 pb-4 bg-white shadow-[0_-2px_6px_rgba(15,23,42,0.08)] z-30">
-        <Button
-          fullWidth
-          onClick={handleGetBuyPass}
-          disabled={!purchasePrice || parseFloat(purchasePrice) <= 0}
-        >
-          Get Buy/Pass
-        </Button>
+        {/* CTA */}
+        <div className="mt-6 pb-4">
+          <Button
+            fullWidth
+            onClick={handleGetBuyPass}
+            disabled={!purchasePrice || parseFloat(purchasePrice) <= 0}
+          >
+            Get Buy/Pass
+          </Button>
+        </div>
       </div>
     </div>
   )

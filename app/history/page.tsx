@@ -50,7 +50,7 @@ export default function HistoryPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-4">History</h1>
 
         {/* Filter chips */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+        <div className="flex flex-wrap gap-2 mb-6 pb-2 overflow-x-hidden">
           {(['All', 'Purchased', 'Considering', 'Sold'] as const).map((status) => (
             <Pill
               key={status}

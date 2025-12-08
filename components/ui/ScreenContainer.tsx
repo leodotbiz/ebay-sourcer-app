@@ -13,7 +13,7 @@ export default function ScreenContainer({
   return (
     <div className="min-h-screen bg-slate-100 flex justify-center">
       {/* Phone frame */}
-      <div className="w-full max-w-sm bg-white shadow-lg relative">
+      <div className="w-full max-w-full sm:max-w-md bg-white shadow-lg relative">
         {children}
       </div>
     </div>
