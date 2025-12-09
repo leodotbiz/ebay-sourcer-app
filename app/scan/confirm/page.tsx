@@ -94,6 +94,17 @@ export default function ConfirmDetailsPage() {
     router.push('/result')
   }
 
+  const handleReshoot = () => {
+    // Clear the selected image so Scan starts fresh
+    sessionStorage.removeItem('selectedImage')
+
+    // Optional: clear any pending draft item
+    sessionStorage.removeItem('pendingItem')
+
+    // Go back to the scan screen
+    router.push('/scan')
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
       <TopBar title="Confirm Details" backHref="/scan" />
@@ -108,7 +119,9 @@ export default function ConfirmDetailsPage() {
           />
         )}
         <div className="absolute bottom-4 right-4">
-          <button className="px-3 py-1.5 bg-gray-800 rounded-full text-white text-sm flex items-center gap-1">
+          <button
+            onClick={handleReshoot}
+            className="px-3 py-1.5 bg-gray-800 rounded-full text-white text-sm flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>

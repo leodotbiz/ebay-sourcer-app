@@ -42,6 +42,16 @@ export default function ScanPage() {
     fileInputRef.current?.click()
   }
 
+  const handleThumbnailClick = () => {
+    if (previewUrl) {
+      // We already have a selected image – go back to Confirm for this draft
+      router.push('/scan/confirm')
+    } else {
+      // No last image yet – open the picker (photo library / file explorer)
+      handleImagePick()
+    }
+  }
+
   return (
     <div className="min-h-screen bg-primary flex flex-col pb-20">
       {/* Top bar */}
@@ -68,7 +78,7 @@ export default function ScanPage() {
 
       {/* Camera frame */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
-        <CameraFrame imageUrl={previewUrl ?? undefined} />
+        <CameraFrame />
         <div className="mt-4 px-4 py-2 bg-primary-light rounded-full">
           <span className="text-white text-sm">Frame item & price tag</span>
         </div>
@@ -76,10 +86,31 @@ export default function ScanPage() {
 
       {/* Bottom controls */}
       <div className="flex justify-center items-center gap-6 px-6 pb-6">
-        <button onClick={handleImagePick} className="text-white">
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
+      <button
+          onClick={handleThumbnailClick}
+          className="w-10 h-10 rounded-md overflow-hidden border border-white/60 bg-black/30 flex items-center justify-center"
+        >
+          {previewUrl ? (
+            <img
+              src={previewUrl}
+              alt="Last captured item"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <svg
+              className="w-6 h-6 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm3 8a3 3 0 100-6 3 3 0 000 6z"
+              />
+            </svg>
+          )}
         </button>
         <button
           onClick={handleShutter}
