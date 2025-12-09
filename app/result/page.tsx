@@ -26,8 +26,7 @@ export default function ResultPage() {
     feePercent,
     avgShippingCost,
     targetRoi,
-    minimumProfit,
-    primaryMarketplace, // reserved for future use (e.g. per-marketplace fee logic)
+    minimumProfit, // reserved for future use (e.g. per-marketplace fee logic)
     addItem,
     updateItem,
     items,
@@ -135,6 +134,11 @@ export default function ResultPage() {
     Low: 'bg-red-100 text-red-800',
   }
 
+  const formattedNetProfit =
+  result.netProfit >= 0
+    ? `+$${result.netProfit.toFixed(2)}`
+    : `-$${Math.abs(result.netProfit).toFixed(2)}`
+
   return (
     <div className="min-h-screen bg-white pb-32">
       <div className="px-6 py-8 pb-40 space-y-6">
@@ -155,7 +159,7 @@ export default function ResultPage() {
           />
           <StatCard
             title="Estimated net profit"
-            value={`+$${result.netProfit.toFixed(2)}`}
+            value={formattedNetProfit}
             subtext="After your fees & shipping."
           />
           <StatCard

@@ -9,6 +9,8 @@ import TextField from '@/components/ui/TextField'
 import NumberField from '@/components/ui/NumberField'
 import Button from '@/components/ui/Button'
 
+const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/400x500?text=Item+Photo'
+
 export default function ConfirmDetailsPage() {
   const router = useRouter()
   const { items } = useAppStore()
@@ -44,11 +46,11 @@ export default function ConfirmDetailsPage() {
         }
       } else {
         // New scan - use selected image or placeholder
-        setImageUrl(storedImage || 'https://via.placeholder.com/400x500?text=Item+Photo')
+        setImageUrl(storedImage || PLACEHOLDER_IMAGE)
       }
     } else {
       // Fresh scan
-      setImageUrl(storedImage || 'https://via.placeholder.com/400x500?text=Item+Photo')
+      setImageUrl(storedImage || PLACEHOLDER_IMAGE)
     }
     
     // Simulate scanning on mount
@@ -67,7 +69,7 @@ export default function ConfirmDetailsPage() {
     if (!price || Number.isNaN(price) || price <= 0) return
   
     // Use actual imageUrl from state
-    let finalImageUrl = imageUrl || 'https://via.placeholder.com/400x500?text=Item+Photo'
+    let finalImageUrl = imageUrl || PLACEHOLDER_IMAGE
     
     // If editing, fallback to existing item's image if no new image
     if (editingItemId && !imageUrl) {

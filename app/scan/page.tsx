@@ -17,9 +17,14 @@ export default function ScanPage() {
     }
   }, [])
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+
+    // If there was a previous blob URL, revoke it to avoid memory leaks
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl)
+    }
 
     // Use a blob URL instead of a huge base64 string
     const objectUrl = URL.createObjectURL(file)
