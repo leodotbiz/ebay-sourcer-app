@@ -1,4 +1,16 @@
-import { CompItem, ResultData, Verdict, Confidence } from '@/store/appStore'
+import { CompItem, Verdict, Confidence } from '@/store/appStore'
+
+export type ResultData = {
+  verdict: Verdict
+  expectedResaleMin: number
+  expectedResaleMax: number
+  netProfit: number
+  roi: number
+  confidence: Confidence
+  timeToSell: string
+  comps: CompItem[]
+  assumptionsSummary: string
+}
 
 const brands = ['J.Crew', 'Nike', 'Adidas', 'Patagonia', 'The North Face', 'Levi\'s', 'Carhartt', 'Ralph Lauren']
 const categories = ['Men\'s Shirt', 'Women\'s Dress', 'Jeans', 'Jacket', 'Sneakers', 'Hat', 'Backpack']

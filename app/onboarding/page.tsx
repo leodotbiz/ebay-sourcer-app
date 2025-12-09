@@ -82,7 +82,7 @@ export default function OnboardingPage() {
             Where do you sell?
           </h1>
           <p className="text-gray-600 mb-8">
-            We'll use this to find relevant comps.
+            {"We'll use this to find relevant comps."}
           </p>
           <div className="space-y-3 mb-8">
             {(['eBay', 'Poshmark', 'Other'] as Marketplace[]).map((marketplace) => (
@@ -180,7 +180,7 @@ export default function OnboardingPage() {
           />
         </div>
         <p className="text-sm text-gray-500 mb-8 text-center">
-          We'll lean toward PASS when expected ROI is below this.
+          {"We'll lean toward PASS when expected ROI is below this."}
         </p>
         <Button fullWidth onClick={handleNext}>
           Finish & Start Scanning

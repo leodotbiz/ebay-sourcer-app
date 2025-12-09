@@ -65,7 +65,7 @@ export default function SettingsPage() {
               onChange={(e) => setMinimumProfit(parseFloat(e.target.value) || 0)}
             />
             <p className="text-xs text-gray-500">
-              We'll lean toward PASS if expected profit is below this.
+              {"We'll lean toward PASS if expected profit is below this."}
             </p>
           </div>
         </div>
