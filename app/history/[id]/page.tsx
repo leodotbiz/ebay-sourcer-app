@@ -7,6 +7,8 @@ import TopBar from '@/components/ui/TopBar'
 import Button from '@/components/ui/Button'
 import NumberField from '@/components/ui/NumberField'
 
+const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/400x500?text=Item+Photo'
+
 export default function ItemDetailPage() {
   const router = useRouter()
   const params = useParams()
@@ -82,6 +84,11 @@ export default function ItemDetailPage() {
     Sold: 'bg-green-100 text-green-800',
   }
 
+  const formattedNetProfit =
+  item.result.netProfit >= 0
+    ? `+$${item.result.netProfit.toFixed(2)}`
+    : `-$${Math.abs(item.result.netProfit).toFixed(2)}`
+
   return (
     <div className="min-h-screen bg-white pb-20">
       <TopBar
@@ -93,7 +100,7 @@ export default function ItemDetailPage() {
         {/* Header */}
         <div>
           <img
-            src={item.imageUrl}
+            src={item.imageUrl || PLACEHOLDER_IMAGE}
             alt={item.detectedDetails.brand}
             className="w-full h-64 object-cover rounded-lg mb-4"
           />
@@ -123,7 +130,7 @@ export default function ItemDetailPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Net profit:</span>
-              <span className="font-medium text-gray-900">${item.result.netProfit.toFixed(2)}</span>
+              <span className="font-medium text-gray-900">{formattedNetProfit}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">ROI:</span>

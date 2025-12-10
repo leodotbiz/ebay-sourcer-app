@@ -6,17 +6,7 @@ import { useAppStore, ItemStatus } from '@/store/appStore'
 import Pill from '@/components/ui/Pill'
 import Button from '@/components/ui/Button'
 
-const verdictBg: Record<'BUY' | 'MAYBE' | 'PASS', string> = {
-  BUY: 'bg-emerald-100 text-emerald-800',
-  MAYBE: 'bg-amber-100 text-amber-800',
-  PASS: 'bg-rose-100 text-rose-800',
-}
-
-const statusLabel: Record<'Purchased' | 'Considering' | 'Sold', string> = {
-  Purchased: 'Purchased',
-  Considering: 'Saved / considering',
-  Sold: 'Sold',
-}
+const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/80x80?text=Item'
 
 export default function HistoryPage() {
   const router = useRouter()
@@ -89,7 +79,7 @@ export default function HistoryPage() {
                 className="w-full flex gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-left"
               >
                 <img
-                  src={item.imageUrl}
+                  src={item.imageUrl || PLACEHOLDER_IMAGE}
                   alt={item.detectedDetails.brand}
                   className="w-16 h-16 rounded object-cover"
                 />
