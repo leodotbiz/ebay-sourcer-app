@@ -99,9 +99,14 @@ export default function ResultPage() {
       addItem(newItem)
     }
 
+    // Clear transient scan state after a successful save
     sessionStorage.removeItem('pendingItem')
+    sessionStorage.removeItem('selectedImage')
+    setPendingItem(null)
+    setResult(null)
     setShowSaveModal(false)
     router.push('/history')
+    
   }
 
   const handleRescan = () => {
