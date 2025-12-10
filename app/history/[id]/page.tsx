@@ -18,6 +18,18 @@ export default function ItemDetailPage() {
   const [showSoldModal, setShowSoldModal] = useState(false)
   const [soldPrice, setSoldPrice] = useState('')
   const [soldDate, setSoldDate] = useState(new Date().toISOString().split('T')[0])
+
+    // Lock background scroll while the "Mark as Sold" modal is open
+    useEffect(() => {
+      if (!showSoldModal) return
+  
+      const originalOverflow = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+  
+      return () => {
+        document.body.style.overflow = originalOverflow
+      }
+    }, [showSoldModal])  
   
   const items = useAppStore((state) => state.items)
   const updateItem = useAppStore((state) => state.updateItem)
@@ -51,6 +63,7 @@ export default function ItemDetailPage() {
   
     setShowSoldModal(false)
     setItem({ ...item, status: 'Sold', soldPrice: price, soldDate })
+    router.push('/history')
   }  
 
   const handleEditDetails = () => {
@@ -89,8 +102,11 @@ export default function ItemDetailPage() {
     ? `+$${item.result.netProfit.toFixed(2)}`
     : `-$${Math.abs(item.result.netProfit).toFixed(2)}`
 
+  const isSaveSoldDisabled = !soldPrice || Number.isNaN(parseFloat(soldPrice)) || parseFloat(soldPrice) <= 0
+
+
   return (
-    <div className="min-h-screen bg-white pb-20">
+    <div className="relative min-h-screen bg-white pb-20">
       <TopBar
         title={`${item.detectedDetails.brand} ${item.detectedDetails.category}`}
         backHref="/history"
@@ -218,8 +234,8 @@ export default function ItemDetailPage() {
 
       {/* Mark as Sold modal */}
       {showSoldModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-end z-[60]">
-          <div className="bg-white rounded-t-3xl w-full p-6 pb-10 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-md mx-4 bg-white rounded-3xl p-6">
             <h3 className="text-lg font-semibold text-gray-900">Mark as Sold</h3>
             <NumberField
               label="Sold Price ($)"
@@ -237,12 +253,16 @@ export default function ItemDetailPage() {
               />
             </div>
             <div className="space-y-3 pt-2">
-              <Button fullWidth onClick={handleMarkAsSold}>
+              <Button
+                fullWidth
+                onClick={handleMarkAsSold}
+                disabled={isSaveSoldDisabled}
+              >
                 Save as sold
               </Button>
               <Button
-                variant="ghost"
                 fullWidth
+                variant="secondary"
                 onClick={() => setShowSoldModal(false)}
               >
                 Cancel
