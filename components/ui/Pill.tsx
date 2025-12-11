@@ -10,10 +10,10 @@ interface PillProps {
 export default function Pill({ label, active = false, onClick, className = '' }: PillProps) {
   return (
     <button
+      type="button"
       onClick={onClick}
       role="tab"
       aria-selected={active}
-      aria-label={`Filter by ${label}`}
       className={`
         inline-flex items-center justify-center
         px-3 sm:px-4 py-1.5 sm:py-2
