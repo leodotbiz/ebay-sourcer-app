@@ -31,12 +31,14 @@ export default function OnboardingPage() {
       setStep(step + 1)
     } else {
       setOnboardingCompleted(true)
+      localStorage.setItem('hasSeenOnboarding', 'true')
       router.replace('/scan')
     }
   }
 
   const handleSkip = () => {
     setOnboardingCompleted(true)
+    localStorage.setItem('hasSeenOnboarding', 'true')
     router.replace('/scan')
   }
 

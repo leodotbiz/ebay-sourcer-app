@@ -8,6 +8,7 @@ import TopBar from '@/components/ui/TopBar'
 import TextField from '@/components/ui/TextField'
 import NumberField from '@/components/ui/NumberField'
 import Button from '@/components/ui/Button'
+import PageTransition from '@/components/ui/PageTransition'
 
 const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/400x500?text=Item+Photo'
 
@@ -20,6 +21,7 @@ export default function ConfirmDetailsPage() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [isScanning, setIsScanning] = useState(false)
+  const [isProcessingResult, setIsProcessingResult] = useState(false)
 
   useEffect(() => {
     // Read selectedImage from sessionStorage
@@ -68,6 +70,9 @@ export default function ConfirmDetailsPage() {
     // Extra safety: don't proceed if price is invalid
     if (!price || Number.isNaN(price) || price <= 0) return
   
+    // Show loading state
+    setIsProcessingResult(true)
+  
     // Use actual imageUrl from state
     let finalImageUrl = imageUrl || PLACEHOLDER_IMAGE
     
@@ -93,7 +98,11 @@ export default function ConfirmDetailsPage() {
     // Clear selectedImage after saving to pendingItem
     sessionStorage.removeItem('selectedImage')
   
-    router.push('/result')
+    // Simulate network/AI latency
+    setTimeout(() => {
+      setIsProcessingResult(false)
+      router.push('/result')
+    }, 650)
   }
 
   const handleReshoot = () => {
@@ -108,8 +117,9 @@ export default function ConfirmDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
-      <TopBar title="Confirm Details" backHref="/scan" />
+    <PageTransition>
+      <div className="min-h-screen bg-slate-50 pb-20">
+        <TopBar title="Confirm Details" backHref="/scan" />
       
       {/* Image preview */}
       <div className="relative w-full h-64 bg-gray-200">
@@ -211,15 +221,23 @@ export default function ConfirmDetailsPage() {
               <Button
                 fullWidth
                 onClick={handleGetBuyPass}
-                disabled={!purchasePrice || parseFloat(purchasePrice) <= 0}
+                disabled={!purchasePrice || parseFloat(purchasePrice) <= 0 || isProcessingResult}
               >
-                Get Buy/Pass
+                {isProcessingResult ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Analyzing comps...
+                </span>
+              ) : (
+                    'Get Buy/Pass'
+                )}
               </Button>
             </div>
           </>
         )}
       </div>
-    </div>
+      </div>
+    </PageTransition>
   )
 }
 

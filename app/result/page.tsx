@@ -6,6 +6,8 @@ import { useAppStore, ScannedItem, ItemStatus } from '@/store/appStore'
 import { calculateMockResult, ResultData } from '@/lib/mockData'
 import Button from '@/components/ui/Button'
 import StatCard from '@/components/ui/StatCard'
+import PageTransition from '@/components/ui/PageTransition'
+import { formatCurrency } from '@/lib/formatters'
 
 // Shape of what Confirm page stores in sessionStorage as "pendingItem"
 type PendingItem = {
@@ -50,6 +52,23 @@ export default function ResultPage() {
       router.push('/scan')
     }
   }, [feePercent, avgShippingCost, targetRoi, minimumProfit, router])
+
+  // Handle Escape key for save modal
+  useEffect(() => {
+    if (!showSaveModal) return
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowSaveModal(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape)
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [showSaveModal])
 
   const handleSave = (status: ItemStatus) => {
     if (!pendingItem || !result) return
@@ -139,13 +158,11 @@ export default function ResultPage() {
     Low: 'bg-red-100 text-red-800',
   }
 
-  const formattedNetProfit =
-  result.netProfit >= 0
-    ? `+$${result.netProfit.toFixed(2)}`
-    : `-$${Math.abs(result.netProfit).toFixed(2)}`
+  const formattedNetProfit = formatCurrency(result.netProfit)
 
   return (
-    <div className="min-h-screen bg-white pb-32">
+    <PageTransition>
+      <div className="min-h-screen bg-white pb-32">
       <div className="px-6 py-8 pb-40 space-y-6">
         {/* Verdict card */}
         <div
@@ -269,9 +286,14 @@ export default function ResultPage() {
 
       {/* Save modal */}
       {showSaveModal && (
-        <div className="absolute inset-0 bg-black/50 flex items-end z-50">
+        <div 
+          className="absolute inset-0 bg-black/50 flex items-end z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="save-modal-title"
+        >
           <div className="bg-white rounded-t-3xl w-full p-6 space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 id="save-modal-title" className="text-lg font-semibold text-gray-900">
               Save item as:
             </h3>
             <Button fullWidth onClick={() => handleSave('Purchased')}>
@@ -294,6 +316,7 @@ export default function ResultPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </PageTransition>
   )
 }

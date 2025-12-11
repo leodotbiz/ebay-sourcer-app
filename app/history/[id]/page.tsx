@@ -6,6 +6,8 @@ import { useAppStore, ScannedItem } from '@/store/appStore'
 import TopBar from '@/components/ui/TopBar'
 import Button from '@/components/ui/Button'
 import NumberField from '@/components/ui/NumberField'
+import { formatDate, formatCurrency, formatMultiplier } from '@/lib/formatters'
+import PageTransition from '@/components/ui/PageTransition'
 
 const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/400x500?text=Item+Photo'
 
@@ -19,15 +21,25 @@ export default function ItemDetailPage() {
   const [soldPrice, setSoldPrice] = useState('')
   const [soldDate, setSoldDate] = useState(new Date().toISOString().split('T')[0])
 
-    // Lock background scroll while the "Mark as Sold" modal is open
+    // Lock background scroll and handle Escape key while the "Mark as Sold" modal is open
     useEffect(() => {
       if (!showSoldModal) return
   
       const originalOverflow = document.body.style.overflow
       document.body.style.overflow = 'hidden'
   
+      // Handle Escape key
+      const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setShowSoldModal(false)
+        }
+      }
+  
+      document.addEventListener('keydown', handleEscape)
+  
       return () => {
         document.body.style.overflow = originalOverflow
+        document.removeEventListener('keydown', handleEscape)
       }
     }, [showSoldModal])  
   
@@ -97,17 +109,15 @@ export default function ItemDetailPage() {
     Sold: 'bg-green-100 text-green-800',
   }
 
-  const formattedNetProfit =
-  item.result.netProfit >= 0
-    ? `+$${item.result.netProfit.toFixed(2)}`
-    : `-$${Math.abs(item.result.netProfit).toFixed(2)}`
+  const formattedNetProfit = formatCurrency(item.result.netProfit)
 
   const isSaveSoldDisabled = !soldPrice || Number.isNaN(parseFloat(soldPrice)) || parseFloat(soldPrice) <= 0
 
 
   return (
-    <div className="relative min-h-screen bg-white pb-20">
-      <TopBar
+    <PageTransition>
+      <div className="relative min-h-screen bg-white pb-20">
+        <TopBar
         title={`${item.detectedDetails.brand} ${item.detectedDetails.category}`}
         backHref="/history"
       />
@@ -129,6 +139,15 @@ export default function ItemDetailPage() {
             </span>
           </div>
         </div>
+
+        {/* Sold Summary */}
+        {item.status === 'Sold' && item.soldPrice && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <p className="text-sm font-medium text-green-900">
+              Sold on {formatDate(item.soldDate)} for {formatCurrency(item.soldPrice)}
+            </p>
+          </div>
+        )}
 
         {/* Key details */}
         <div className="bg-gray-50 rounded-lg p-4 space-y-3">
@@ -163,18 +182,60 @@ export default function ItemDetailPage() {
             {item.soldPrice && (
               <div className="flex justify-between pt-2 border-t border-gray-200">
                 <span className="text-gray-600">Sold price:</span>
-                <span className="font-medium text-green-600">${item.soldPrice.toFixed(2)}</span>
+                <span className="font-medium text-green-600">
+                  {formatCurrency(item.soldPrice)}
+                </span>
               </div>
             )}
             {item.soldDate && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Sold date:</span>
                 <span className="font-medium text-gray-900">
-                  {new Date(item.soldDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  {formatDate(item.soldDate)}
                 </span>
               </div>
             )}
           </div>
+
+          {/* Realized Performance - Only for sold items */}
+          {item.status === 'Sold' && item.soldPrice && item.purchasePrice && item.purchasePrice > 0 && (
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">Realized Performance</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Realized ROI:</span>
+                  <span className="font-medium text-gray-900">
+                    {formatMultiplier(item.soldPrice / item.purchasePrice)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Realized Profit:</span>
+                  <span className={`font-medium ${item.soldPrice - item.purchasePrice >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {formatCurrency(item.soldPrice - item.purchasePrice)}
+                  </span>
+                </div>
+                {/* Performance vs Predicted Range */}
+                {item.result.expectedResaleMin && item.result.expectedResaleMax && (
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="text-gray-600">Performance:</span>
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                      item.soldPrice > item.result.expectedResaleMax
+                        ? 'bg-green-100 text-green-700'
+                        : item.soldPrice < item.result.expectedResaleMin
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-yellow-100 text-yellow-700'
+                    }`}>
+                      {item.soldPrice > item.result.expectedResaleMax
+                        ? 'Above predicted range'
+                        : item.soldPrice < item.result.expectedResaleMin
+                        ? 'Below predicted range'
+                        : 'Within predicted range'}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Notes */}
@@ -234,9 +295,14 @@ export default function ItemDetailPage() {
 
       {/* Mark as Sold modal */}
       {showSoldModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
           <div className="w-full max-w-md mx-4 bg-white rounded-3xl p-6">
-            <h3 className="text-lg font-semibold text-gray-900">Mark as Sold</h3>
+            <h3 id="modal-title" className="text-lg font-semibold text-gray-900">Mark as Sold</h3>
             <NumberField
               label="Sold Price ($)"
               prefix="$"
@@ -271,7 +337,8 @@ export default function ItemDetailPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </PageTransition>
   )
 }
 

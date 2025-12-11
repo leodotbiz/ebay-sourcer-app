@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import CameraFrame from '@/components/ui/CameraFrame'
+import PageTransition from '@/components/ui/PageTransition'
 
 export default function ScanPage() {
   const router = useRouter()
@@ -58,6 +59,7 @@ export default function ScanPage() {
   }
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-primary flex flex-col pb-20">
       {/* Top bar */}
       <div className="flex justify-between items-center px-4 pt-4 pb-2">
@@ -71,7 +73,6 @@ export default function ScanPage() {
           </svg>
         </button>
       </div>
-
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -79,6 +80,7 @@ export default function ScanPage() {
         accept="image/*"
         className="hidden"
         onChange={handleFileChange}
+        aria-label="Select item photo from library"
       />
 
       {/* Camera frame */}
@@ -93,7 +95,8 @@ export default function ScanPage() {
       <div className="flex justify-center items-center gap-6 px-6 pb-6">
       <button
           onClick={handleThumbnailClick}
-          className="w-10 h-10 rounded-md overflow-hidden border border-white/60 bg-black/30 flex items-center justify-center"
+          className="w-10 h-10 rounded-md overflow-hidden border border-white/60 bg-black/30 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-white"
+          aria-label={previewUrl ? "View last captured item" : "Select photo from library"}
         >
           {previewUrl ? (
             <img
@@ -119,13 +122,15 @@ export default function ScanPage() {
         </button>
         <button
           onClick={handleShutter}
-          className="w-20 h-20 rounded-full bg-white border-4 border-gray-300 flex items-center justify-center active:scale-95 transition-transform"
+          className="w-20 h-20 rounded-full bg-white border-4 border-gray-300 flex items-center justify-center active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+          aria-label="Capture item photo"
         >
           <div className="w-16 h-16 rounded-full bg-white border-2 border-gray-400"></div>
         </button>
         <div className="w-8 h-8"></div>
       </div>
     </div>
+    </PageTransition>
   )
 }
 

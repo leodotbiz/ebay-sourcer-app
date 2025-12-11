@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useAppStore, ItemStatus } from '@/store/appStore'
 import Pill from '@/components/ui/Pill'
 import Button from '@/components/ui/Button'
+import PageTransition from '@/components/ui/PageTransition'
+// Note: using local formatShortDate helper for compact dates
 
 const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/80x80?text=Item'
 
@@ -30,17 +32,22 @@ export default function HistoryPage() {
     PASS: 'bg-accent-red text-white',
   }
 
-  const formatDate = (date: string) => {
+  const formatShortDate = (date: string) => {
     return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   }
 
   return (
-    <div className="min-h-screen bg-white pb-20">
+    <PageTransition>
+      <div className="min-h-screen bg-white pb-20">
       <div className="px-6 py-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">History</h1>
 
         {/* Filter chips */}
-        <div className="flex flex-wrap gap-2 mb-6 pb-2 overflow-x-hidden">
+        <div 
+          className="flex flex-wrap gap-2 mb-6 px-1 pt-1 pb-2"
+          role="tablist"
+          aria-label="Filter items by status"
+        >
           {(['All', 'Purchased', 'Considering', 'Sold'] as const).map((status) => (
             <Pill
               key={status}
@@ -88,8 +95,13 @@ export default function HistoryPage() {
                     {item.detectedDetails.brand} {item.detectedDetails.category}
                   </p>
                   <p className="text-sm text-gray-600">
-                    Buy price: ${item.purchasePrice.toFixed(2)} · Saved: {formatDate(item.createdAt)}
+                    Buy price: ${item.purchasePrice.toFixed(2)} · Saved: {formatShortDate(item.createdAt)}
                   </p>
+                  {item.status === 'Sold' && item.soldPrice && (
+                    <p className="text-sm text-green-600 font-medium mt-1">
+                      Sold for ${item.soldPrice.toFixed(2)} on {formatShortDate(item.soldDate || item.createdAt)}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-col items-end gap-2">
                   <span className={`px-2 py-1 rounded text-xs font-medium ${verdictColors[item.result.verdict]}`}>
@@ -104,7 +116,8 @@ export default function HistoryPage() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </PageTransition>
   )
 }
 
