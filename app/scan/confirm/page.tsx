@@ -24,43 +24,48 @@ export default function ConfirmDetailsPage() {
   const [isProcessingResult, setIsProcessingResult] = useState(false)
 
   useEffect(() => {
-    // Read selectedImage from sessionStorage
+    // Read selected image and any pending item from sessionStorage
     const storedImage = sessionStorage.getItem('selectedImage')
-    
-    // Check if we're editing an existing item
     const stored = sessionStorage.getItem('pendingItem')
+
     if (stored) {
+      // Coming from Result or editing an existing item – restore full state
       const item = JSON.parse(stored)
-      if (item.editingItemId) {
-        setEditingItemId(item.editingItemId)
-        setDetectedDetails(item.detectedDetails)
-        setPurchasePrice(item.purchasePrice.toString())
-        setNote(item.note || '')
-        
-        // If no new image selected, use existing item's image
-        if (storedImage) {
-          setImageUrl(storedImage)
+
+      setEditingItemId(item.editingItemId ?? null)
+      setDetectedDetails(item.detectedDetails)
+      setPurchasePrice(item.purchasePrice.toString())
+      setNote(item.note || '')
+
+      if (storedImage) {
+        // If a new image was captured, prefer that
+        setImageUrl(storedImage)
+      } else if (item.imageUrl) {
+        // Otherwise use the imageUrl saved in pendingItem
+        setImageUrl(item.imageUrl)
+      } else if (item.editingItemId) {
+        // Fallback: if editing and imageUrl missing, look up the existing item
+        const existingItem = items.find((i) => i.id === item.editingItemId)
+        if (existingItem?.imageUrl) {
+          setImageUrl(existingItem.imageUrl)
         } else {
-          const existingItem = items.find(i => i.id === item.editingItemId)
-          if (existingItem) {
-            setImageUrl(existingItem.imageUrl)
-          }
+          setImageUrl(PLACEHOLDER_IMAGE)
         }
       } else {
-        // New scan - use selected image or placeholder
-        setImageUrl(storedImage || PLACEHOLDER_IMAGE)
+        setImageUrl(PLACEHOLDER_IMAGE)
       }
     } else {
-      // Fresh scan
+      // Fresh scan – no pending item yet
       setImageUrl(storedImage || PLACEHOLDER_IMAGE)
+      // detectedDetails stays as the initial generateMockDetectedDetails()
     }
-    
+
     // Simulate scanning on mount
     setIsScanning(true)
     const timer = setTimeout(() => {
       setIsScanning(false)
     }, 600)
-    
+
     return () => clearTimeout(timer)
   }, [items])
 

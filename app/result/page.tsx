@@ -128,7 +128,8 @@ export default function ResultPage() {
     
   }
 
-  const handleRescan = () => {
+  const handleAdjustDetails = () => {
+    // Do not clear pendingItem here – we want Confirm to restore it
     router.push('/scan/confirm')
   }
 
@@ -277,9 +278,9 @@ export default function ResultPage() {
         <Button
           fullWidth
           className="bg-gray-100 hover:bg-gray-200 text-gray-700"
-          onClick={handleRescan}
+          onClick={handleAdjustDetails}
         >
-          Rescan / adjust details
+          Adjust details
         </Button>
 
       </div>
