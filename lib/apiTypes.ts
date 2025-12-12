@@ -4,19 +4,18 @@
  * They mirror existing internal types to maintain consistency
  */
 
-import type { CompItem, Verdict, Confidence } from '@/store/appStore'
+import type { ScannedItem, CompItem } from '@/store/appStore'
+import type { ResultData } from '@/lib/mockData'
+
+// Re-export types from internal sources to prevent drift
+export type { CompItem, ResultData }
 
 // ============================================================================
 // Scan Detection Types
 // ============================================================================
 
-export interface DetectedDetails {
-  brand: string
-  category: string
-  size: string
-  condition: string
-  color: string
-}
+// Derive DetectedDetails from the source of truth
+export type DetectedDetails = ScannedItem['detectedDetails']
 
 export interface ScanRequest {
   imageId?: string
@@ -32,11 +31,7 @@ export interface ScanResponse {
 // ============================================================================
 
 export interface CompsRequest {
-  brand: string
-  category: string
-  size?: string
-  condition?: string
-  color?: string
+  detectedDetails: DetectedDetails
 }
 
 export interface CompsResponse {
@@ -61,14 +56,6 @@ export interface VerdictRequest {
 }
 
 export interface VerdictResponse {
-  verdict: Verdict
-  expectedResaleMin: number
-  expectedResaleMax: number
-  netProfit: number
-  roi: number
-  confidence: Confidence
-  timeToSell: string
-  comps: CompItem[]
-  assumptionsSummary?: string
+  result: ResultData
 }
 

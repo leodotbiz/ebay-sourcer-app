@@ -19,7 +19,7 @@ import { generateMockDetectedDetails, generateMockComps, calculateMockResult } f
 
 // Phase 4: Always use mock data
 // Phase 5: Can be controlled by environment variable or config
-const USE_MOCK = true
+export const USE_MOCK = true as const
 
 /**
  * Analyzes a scanned image and returns detected item details
@@ -78,6 +78,6 @@ export async function getVerdict(request: VerdictRequest): Promise<VerdictRespon
     request.settings.minimumProfit
   )
 
-  return result
+  return { result }
 }
 
