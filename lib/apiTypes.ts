@@ -55,6 +55,9 @@ export interface VerdictRequest {
   settings: VerdictSettings
 }
 
+// NOTE: VerdictResponse intentionally wraps the internal ResultData shape.
+// When integrating into the store, assign `response.result` to `ScannedItem.result`
+// (do NOT assign the whole response object).
 export interface VerdictResponse {
   result: ResultData
 }
