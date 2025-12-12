@@ -24,18 +24,42 @@ export const USE_MOCK = true as const
 /**
  * Analyzes a scanned image and returns detected item details
  * Phase 4: Returns mock detected details
- * Phase 5: Will call real AI detection API
+ * Phase 5: Calls /api/scan when USE_MOCK is false
  */
-export async function analyzeScan(_request: ScanRequest): Promise<ScanResponse> {
-  if (!USE_MOCK) {
-    throw new Error('Real API not implemented')
+export async function analyzeScan(request: ScanRequest): Promise<ScanResponse> {
+  if (USE_MOCK) {
+    // Simulate network latency
+    await new Promise((resolve) => setTimeout(resolve, 300))
+
+    return {
+      detectedDetails: generateMockDetectedDetails(),
+    }
   }
 
-  // Simulate network latency
-  await new Promise((resolve) => setTimeout(resolve, 300))
+  // Real API path (browser/client only)
+  try {
+    const response = await fetch('/api/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageUrl: request.imageUrl }),
+    })
 
-  return {
-    detectedDetails: generateMockDetectedDetails(),
+    // Prefer stable error text (statusText can be empty)
+    if (!response.ok) {
+      const message = await response.text().catch(() => '')
+      throw new Error(message || `Scan failed (HTTP ${response.status})`)
+    }
+
+    const data = (await response.json()) as ScanResponse
+
+    // Light validation
+    if (!data?.detectedDetails) {
+      throw new Error('Invalid response: missing detectedDetails')
+    }
+
+    return data
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Failed to analyze scan')
   }
 }
 
